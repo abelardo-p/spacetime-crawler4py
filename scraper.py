@@ -38,7 +38,11 @@ def is_valid(url):
         if parsed.scheme not in set(["http", "https"]):
             return False
         domain = parsed.netloc.lower()
-        if not (domain.endswith("ics.uci.edu") or domain == "ics.uci.edu"):
+        valid_domains = ('ics.uci.edu', 
+                         'cs.uci.edu', 
+                         'informatics.uci.edu', 
+                         'stat.uci.edu')
+        if not any(domain.endswith(valid_dom) for valid_dom in valid_domains):
             return False
          
         
