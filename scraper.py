@@ -4,16 +4,12 @@ from bs4 import BeautifulSoup
 from tokenizer import tokenize
 import pandas
 
-def scraper(url, resp):
+def scraper(url, resp, word_freqs, link_to_words):
     links = []
     if resp.status > 199 and resp.status < 300:
         links, pageInfo = extract_link_information(url, resp)
-        writePageInfo(pageInfo)
     return [link for link in links if is_valid(link)]
 
-"Writes frequencies to pandas file dataframe"
-def writePageInfo(pageInfo: dict[str : int]) -> None:
-    pass
     
 def extract_link_information(url, resp) -> list[list[str], dict[str : int]]:
     soup = BeautifulSoup(resp.raw_response.content)
@@ -53,6 +49,15 @@ def is_valid(url):
         parsed = urlparse(url)
         if parsed.scheme not in set(["http", "https"]):
             return False
+        domain = parsed.netloc.lower()
+        valid_domains = ('ics.uci.edu', 
+                         'cs.uci.edu', 
+                         'informatics.uci.edu', 
+                         'stat.uci.edu')
+        if not any(domain.endswith(valid_dom) for valid_dom in valid_domains):
+            return False
+         
+        
         return not re.match(
             r".*\.(css|js|bmp|gif|jpe?g|ico"
             + r"|png|tiff?|mid|mp2|mp3|mp4"
