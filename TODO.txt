@@ -1,0 +1,12 @@
+Abe:
+Load stopwords in worker and pass to scraper and tokenizer 
+
+Anika:
+Post process site information from 2 maps
+Subdomains count
+
+
+Loop detection
+
+Low value sites
+
