@@ -2,9 +2,6 @@ import re
 from urllib.parse import urlparse
 from bs4 import BeautifulSoup
 from tokenizer import tokenize
-import pandas as pd
-impo
-
 
 def scraper(url, resp):
     links = []
@@ -14,12 +11,10 @@ def scraper(url, resp):
         return next_links, cur_page_words
         
     
-    
 def extract_link_information(url, resp) -> list[list[str], dict[str : int]]:
     soup = BeautifulSoup(resp.raw_response.content)
     tokenizer = tokenize(soup.stripped_strings)
     links = extract_next_links(url, resp, soup)
-
     return links, tokenizer.getTokens()
 
 def extract_next_links(url, resp, soup):
@@ -34,16 +29,8 @@ def extract_next_links(url, resp, soup):
     # Return a list with the hyperlinks (as strings) scrapped from resp.raw_response.content
 
     links = []
-    links = extractLinks(resp)
-    return links
-
-def extractLinks(resp):
-    # Given raw response extract resp.raw_response.content strip all usefull information contained
-    soup = BeautifulSoup(resp.raw_response.content)
     transformUrl = lambda url : url.get('href').split('#')[0]
-    
     return (transformUrl(link) for link in soup.find_all('a'))
-
 
 def is_valid(url):
     # Decide whether to crawl this url or not. 
@@ -60,7 +47,6 @@ def is_valid(url):
                          'stat.uci.edu')
         if not any(domain.endswith(valid_dom) for valid_dom in valid_domains):
             return False
-         
         return not re.match(
             r".*\.(css|js|bmp|gif|jpe?g|ico"
             + r"|png|tiff?|mid|mp2|mp3|mp4"
