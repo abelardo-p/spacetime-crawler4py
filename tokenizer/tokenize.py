@@ -6,8 +6,10 @@ def alphaNumeric(char: str) -> bool:
             or char >= '0' and char <= '9'
 
 class Tokenize:
-    def __init__(self, input):
+    def __init__(self, input, stopWords):
         self.tokens = {}
+        self.stopWords = stopWords
+        self.words = 0
         self.tokenize(input)
 
     def getTokens(self):
@@ -18,10 +20,14 @@ class Tokenize:
         for right, char in enumerate(line):
             if not alphaNumeric(char):
                 if left < right and right - left > 1:
-                    yield line[left : right].lower()
+                    words += 1
+                    word = line[left : right].lower()
+                    if word not in self.stopWords:
+                        yield word
                 left = right +1
         
         if left < len(line) and right - left > 1:
+            words += 1
             yield line[left : ].lower()
 
     def tokenize(self, input) -> None:
