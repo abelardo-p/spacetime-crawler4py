@@ -2,18 +2,27 @@ import re
 from urllib.parse import urlparse
 from bs4 import BeautifulSoup
 from tokenizer import tokenize
+import pandas
 
 def scraper(url, resp):
-    link
+    links = []
     if resp.status > 199 and resp.status < 300:
-
+        links, pageInfo = extract_link_information(url, resp)
+        writePageInfo(pageInfo)
     return [link for link in links if is_valid(link)]
 
-def extract_link_information(url, resp):
-    raw_text = soup.stripped_strings
-    tokenizer = tokenize(raw_text)
+"Writes frequencies to pandas file dataframe"
+def writePageInfo(pageInfo: dict[str : int]) -> None:
+    pass
+    
+def extract_link_information(url, resp) -> list[list[str], dict[str : int]]:
+    soup = BeautifulSoup(resp.raw_response.content)
+    tokenizer = tokenize(soup.stripped_strings)
+    links = extract_next_links(url, resp, soup)
 
-def extract_next_links(url, resp):
+    return links, tokenizer.getTokens()
+
+def extract_next_links(url, resp, soup):
     # Implementation required.
     # url: the URL that was used to get the page
     # resp.url: the actual url of the page
