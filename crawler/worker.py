@@ -2,12 +2,16 @@ from threading import Thread
 
 from inspect import getsource
 from utils.download import download
+import Counter
 from utils import get_logger
 import scraper
 import time
 
 
 class Worker(Thread):
+    word_freqs = Counter()
+    links_to_words = Counter()
+
     def __init__(self, worker_id, config, frontier):
         self.logger = get_logger(f"Worker-{worker_id}", "Worker")
         self.config = config
@@ -27,7 +31,9 @@ class Worker(Thread):
             self.logger.info(
                 f"Downloaded {tbd_url}, status <{resp.status}>, "
                 f"using cache {self.config.cache_server}.")
-            scraped_urls = scraper.scraper(tbd_url, resp)
+            scraped_urls, cur_page_words = scraper.scraper(tbd_url, resp)
+            Worker.word_freqs.update(cur_page_words)
+            Worker.links_to_words[tbd_url] = sum(cur_page_words.values())
             for scraped_url in scraped_urls:
                 self.frontier.add_url(scraped_url)
             self.frontier.mark_url_complete(tbd_url)

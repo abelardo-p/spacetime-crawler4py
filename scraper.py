@@ -1,12 +1,28 @@
 import re
 from urllib.parse import urlparse
 from bs4 import BeautifulSoup
+from tokenizer import tokenize
+import pandas as pd
+impo
+
 
 def scraper(url, resp):
-    links = extract_next_links(url, resp)
-    return [link for link in links if is_valid(link)]
+    links = []
+    if resp.status > 199 and resp.status < 300:
+        next_links, cur_page_words = extract_link_information(url, resp)
+        next_links = [link for link in next_links if is_valid(link)]
+        return next_links, cur_page_words
+        
+    
+    
+def extract_link_information(url, resp) -> list[list[str], dict[str : int]]:
+    soup = BeautifulSoup(resp.raw_response.content)
+    tokenizer = tokenize(soup.stripped_strings)
+    links = extract_next_links(url, resp, soup)
 
-def extract_next_links(url, resp):
+    return links, tokenizer.getTokens()
+
+def extract_next_links(url, resp, soup):
     # Implementation required.
     # url: the URL that was used to get the page
     # resp.url: the actual url of the page
@@ -18,14 +34,14 @@ def extract_next_links(url, resp):
     # Return a list with the hyperlinks (as strings) scrapped from resp.raw_response.content
 
     links = []
-    if resp.status > 199 and resp.status < 300:
-        links = extractLinks(resp)
+    links = extractLinks(resp)
     return links
 
 def extractLinks(resp):
     # Given raw response extract resp.raw_response.content strip all usefull information contained
     soup = BeautifulSoup(resp.raw_response.content)
     transformUrl = lambda url : url.get('href').split('#')[0]
+    
     return (transformUrl(link) for link in soup.find_all('a'))
 
 
@@ -45,7 +61,6 @@ def is_valid(url):
         if not any(domain.endswith(valid_dom) for valid_dom in valid_domains):
             return False
          
-        
         return not re.match(
             r".*\.(css|js|bmp|gif|jpe?g|ico"
             + r"|png|tiff?|mid|mp2|mp3|mp4"
