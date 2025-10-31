@@ -6,7 +6,7 @@ def alphaNumeric(char: str) -> bool:
             or char >= '0' and char <= '9'
 
 class Tokenize:
-    def __init__(self, input, stopWords):
+    def __init__(self, input, stopWords: dict[str]):
         self.tokens = {}
         self.stopWords = stopWords
         self.words = 0
