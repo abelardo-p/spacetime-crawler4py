@@ -19,14 +19,14 @@ def extract_next_links(url, resp):
 
     links = []
     if resp.status > 199 and resp.status < 300:
-
         links = extractLinks(resp)
     return links
 
 def extractLinks(resp):
     # Given raw response extract resp.raw_response.content strip all usefull information contained
     soup = BeautifulSoup(resp.raw_response.content)
-    return (link.get('href') for link in soup.find_all('a'))
+    transformUrl = lambda url : url.get('href').split('#')[0]
+    return (transformUrl(link) for link in soup.find_all('a'))
 
 
 def is_valid(url):
