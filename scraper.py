@@ -1,10 +1,17 @@
 import re
 from urllib.parse import urlparse
 from bs4 import BeautifulSoup
+from tokenizer import tokenize
 
 def scraper(url, resp):
-    links = extract_next_links(url, resp)
+    link
+    if resp.status > 199 and resp.status < 300:
+
     return [link for link in links if is_valid(link)]
+
+def extract_link_information(url, resp):
+    raw_text = soup.stripped_strings
+    tokenizer = tokenize(raw_text)
 
 def extract_next_links(url, resp):
     # Implementation required.
@@ -18,14 +25,14 @@ def extract_next_links(url, resp):
     # Return a list with the hyperlinks (as strings) scrapped from resp.raw_response.content
 
     links = []
-    if resp.status > 199 and resp.status < 300:
-        links = extractLinks(resp)
+    links = extractLinks(resp)
     return links
 
 def extractLinks(resp):
     # Given raw response extract resp.raw_response.content strip all usefull information contained
     soup = BeautifulSoup(resp.raw_response.content)
     transformUrl = lambda url : url.get('href').split('#')[0]
+    
     return (transformUrl(link) for link in soup.find_all('a'))
 
 
