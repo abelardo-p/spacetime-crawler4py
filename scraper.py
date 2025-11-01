@@ -6,7 +6,7 @@ from tokenizer import tokenize
 from data import CrawledData
 
 
-RAW_RESPONSE_TEXT_LIMIT = 1 * 10 ** 6
+RAW_RESPONSE_TEXT_LIMIT = 1 * 10 ** 6 # Enough characters to represent a mid to large size book
 
 def scraper(url, resp, stopWords: dict[str]) -> list[ list[str], dict[str], int]:
     next_links, cur_page_words, total_word_count = [], {}, 0
