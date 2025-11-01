@@ -33,9 +33,9 @@ class Worker(Thread):
             self.logger.info(
                 f"Downloaded {tbd_url}, status <{resp.status}>, "
                 f"using cache {self.config.cache_server}.")
-            scraped_urls, cur_page_words = scraper.scraper(tbd_url, resp, self.stopWords)
+            scraped_urls, cur_page_words, cur_page_word_count = scraper.scraper(tbd_url, resp, self.stopWords)
             CrawledData.word_freqs.update(cur_page_words)
-            CrawledData.links_to_words[tbd_url] = sum(cur_page_words.values()) # FIX THIS to get total count including stopwords!
+            CrawledData.links_to_words[tbd_url] = cur_page_word_count # FIX THIS to get total count including stopwords!
             for scraped_url in scraped_urls:
                 self.frontier.add_url(scraped_url)
             self.frontier.mark_url_complete(tbd_url)
