@@ -2,11 +2,10 @@ Abe:
 Load stopwords in worker and pass to scraper and tokenizer: COMPLETED (probably working haven't tested)
 
 Anika:
-Post process site information from 2 maps
-Subdomains count
+Post process site information from 2 maps: COMPLETED (just need to output attributes to file at end of crawl)
+Subdomains count: COMPLETED
 
-
-Loop detection
+Loop detection: COMPLETED initial (need to test though)
 
 Low value sites
 
