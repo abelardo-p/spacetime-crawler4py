@@ -11,7 +11,7 @@ def scraper(url, resp, stopWords: dict[str]) -> list[ list[str], dict[str], int]
         next_links, cur_page_words, totalWordCount = extract_link_information(url, resp, stopWords)
         next_links = [link for link in next_links if is_valid(link)]
         return next_links, cur_page_words, totalWordCount
-    return next_links, cur_page_words, totalWordCount
+    return next_links, cur_page_words, total_word_count
     
 def extract_link_information(url, resp, stopWords, getWordCount=False) -> list[ list[str], dict[str : int] ]:
     soup = BeautifulSoup(resp.raw_response.content)
