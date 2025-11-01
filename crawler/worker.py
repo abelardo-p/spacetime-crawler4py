@@ -1,5 +1,5 @@
 from threading import Thread
-from data import CrawledData
+from data import CrawledData, seed_url
 from inspect import getsource
 from utils.download import download
 from utils import get_logger
@@ -35,7 +35,7 @@ class Worker(Thread):
                 f"using cache {self.config.cache_server}.")
             scraped_urls, cur_page_words, cur_page_word_count = scraper.scraper(tbd_url, resp, self.stopWords)
             CrawledData.word_freqs.update(cur_page_words)
-            CrawledData.links_to_words[tbd_url] = cur_page_word_count # FIX THIS to get total count including stopwords!
+            CrawledData.links_to_words[tbd_url] = cur_page_word_count
             for scraped_url in scraped_urls:
                 self.frontier.add_url(scraped_url)
             self.frontier.mark_url_complete(tbd_url)
