@@ -12,3 +12,4 @@ Low value sites
 
 https://isg.ics.uci.edu/events/* is a trap 
 .php is a trap .jsx .tsx
+Politeness per-domain

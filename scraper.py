@@ -1,5 +1,6 @@
 import re
-from urllib.parse import urlparse
+import os
+from urllib.parse import urlparse, urlunparse
 from bs4 import BeautifulSoup
 from tokenizer import tokenize
 from data import CrawledData
@@ -59,25 +60,24 @@ def is_valid(url):
         if not subdomain or not any(subdomain.endswith(valid_dom) for valid_dom in valid_domains):
             return False
         CrawledData.subdomains[subdomain] += 1
-        
+        canonicalized_url = canonicalize(parsed)
+        if canonicalized_url in CrawledData.visited:
+            return False
+        CrawledData.visited.add(canonicalized_url)
         return True
-    
+ 
     except TypeError:
         print ("TypeError for ", parsed)
+        return False
+    except ValueError:
+        print ("ValueError for ", parsed)
+        return False
 
-
-def split_domain_parts(parsed):
-    host = parsed.hostname
-    if not host:
-        return None, None
-
-    parts = host.split('.')
-
-    if len(parts) == 1:
-        domain = host
-        subdomain = None
-    else:
-        domain = '.'.join(parts[-2:])
-        subdomain = '.'.join(parts[:-2]) or None
-
-    return subdomain, domain
+def canonicalize(parsed):
+    scheme = parsed.scheme.lower()
+    netloc = parsed.hostname.lower()
+    # Normalize path
+    path = os.path.normpath(parsed.path)
+    # Sort query params
+    query = "&".join(sorted(parsed.query.split("&"))) if parsed.query else ""
+    return urlunparse((scheme, netloc, path, "", query, ""))
