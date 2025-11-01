@@ -2,6 +2,7 @@ import re
 from urllib.parse import urlparse
 from bs4 import BeautifulSoup
 from tokenizer import tokenize
+from data import CrawledData
 
 def scraper(url, resp):
     links = []
@@ -27,7 +28,6 @@ def extract_next_links(url, resp, soup):
     #         resp.raw_response.url: the url, again
     #         resp.raw_response.content: the content of the page!
     # Return a list with the hyperlinks (as strings) scrapped from resp.raw_response.content
-
     transformUrl = lambda url : url.get('href').split('#')[0]
     return [transformUrl(link) for link in soup.find_all('a') if link]
 
@@ -39,14 +39,7 @@ def is_valid(url):
         parsed = urlparse(url)
         if parsed.scheme not in set(["http", "https"]):
             return False
-        domain = parsed.netloc.lower()
-        valid_domains = ('ics.uci.edu', 
-                         'cs.uci.edu', 
-                         'informatics.uci.edu', 
-                         'stat.uci.edu')
-        if not any(domain.endswith(valid_dom) for valid_dom in valid_domains):
-            return False
-        return not re.match(
+        if not re.match(
             r".*\.(css|js|bmp|gif|jpe?g|ico"
             + r"|png|tiff?|mid|mp2|mp3|mp4"
             + r"|wav|avi|mov|mpeg|ram|m4v|mkv|ogg|ogv|pdf"
@@ -54,8 +47,36 @@ def is_valid(url):
             + r"|data|dat|exe|bz2|tar|msi|bin|7z|psd|dmg|iso"
             + r"|epub|dll|cnf|tgz|sha1"
             + r"|thmx|mso|arff|rtf|jar|csv"
-            + r"|rm|smil|wmv|swf|wma|zip|rar|gz)$", parsed.path.lower())
-
+            + r"|rm|smil|wmv|swf|wma|zip|rar|gz)$", parsed.path.lower()):
+            return False
+        
+        subdom, domain = split_domain_parts(url)
+        valid_domains = ('ics.uci.edu', 
+                         'cs.uci.edu', 
+                         'informatics.uci.edu', 
+                         'stat.uci.edu')
+        if not any(domain.endswith(valid_dom) for valid_dom in valid_domains):
+            return False
+        CrawledData.subdomains[subdom+domain] += 1
+        
+        return True
+    
     except TypeError:
         print ("TypeError for ", parsed)
-        raise
+
+def split_domain_parts(url):
+    parsed = urlparse(url)
+    host = parsed.hostname
+    if not host:
+        return None, None
+
+    parts = host.split('.')
+    # To handle short hosts like 'uci.edu' safely
+    if len(parts) == 1:
+        domain = host
+        subdomain = None
+    else:
+        domain = '.'.join(parts[-2:])
+        subdomain = '.'.join(parts[:-2]) or None
+
+    return subdomain, domain

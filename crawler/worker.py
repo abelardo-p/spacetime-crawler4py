@@ -1,16 +1,14 @@
 from threading import Thread
-
+from data import CrawledData
 from inspect import getsource
 from utils.download import download
-from collections import Counter
 from utils import get_logger
 import scraper
 import time
 
 STOP_WORD_FILE = 'C:\Users\apere\Desktop\CS 121\Assignment-2\spacetime-crawler4py\stopwords.txt'
+
 class Worker(Thread):
-    word_freqs = Counter()
-    links_to_words = Counter()
 
     def __init__(self, worker_id, config, frontier):
         self.logger = get_logger(f"Worker-{worker_id}", "Worker")
@@ -34,8 +32,8 @@ class Worker(Thread):
                 f"Downloaded {tbd_url}, status <{resp.status}>, "
                 f"using cache {self.config.cache_server}.")
             scraped_urls, cur_page_words = scraper.scraper(tbd_url, resp)
-            Worker.word_freqs.update(cur_page_words)
-            Worker.links_to_words[tbd_url] = sum(cur_page_words.values())
+            CrawledData.word_freqs.update(cur_page_words)
+            CrawledData.links_to_words[tbd_url] = sum(cur_page_words.values()) # FIX THIS to get total count including stopwords!
             for scraped_url in scraped_urls:
                 self.frontier.add_url(scraped_url)
             self.frontier.mark_url_complete(tbd_url)
