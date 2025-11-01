@@ -7,7 +7,7 @@ from utils import get_logger
 import scraper
 import time
 
-
+STOP_WORD_FILE = 'C:\Users\apere\Desktop\CS 121\Assignment-2\spacetime-crawler4py\stopwords.txt'
 class Worker(Thread):
     word_freqs = Counter()
     links_to_words = Counter()
@@ -20,6 +20,8 @@ class Worker(Thread):
         assert {getsource(scraper).find(req) for req in {"from requests import", "import requests"}} == {-1}, "Do not use requests in scraper.py"
         assert {getsource(scraper).find(req) for req in {"from urllib.request import", "import urllib.request"}} == {-1}, "Do not use urllib.request in scraper.py"
         super().__init__(daemon=True)
+
+        self.stopWords = getStopWords()
         
     def run(self):
         while True:
@@ -38,3 +40,13 @@ class Worker(Thread):
                 self.frontier.add_url(scraped_url)
             self.frontier.mark_url_complete(tbd_url)
             time.sleep(self.config.time_delay)
+
+    def getStopWords(self) -> dict[str]:
+        try:
+            with path.open(encoding='utf-8', errors='replace') as file:
+                for line in file:
+                    tokens.extend(self.getTokens(line))
+        except OSError:
+            print(f"Could not open file: {path}")
+        finally:
+            return tokens
