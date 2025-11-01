@@ -14,7 +14,7 @@ def scraper(url, resp, stopWords: dict[str]) -> list[ list[str], dict[str], int]
     next_links, cur_page_words, total_word_count = [], {}, 0
     if resp.status > 199 and resp.status < 300 and len(resp.raw_response.content) < RAW_RESPONSE_TEXT_LIMIT:
         next_links, cur_page_words, total_word_count = extract_link_information(url, resp, stopWords)
-        skip_links = check_page_low_data()
+        skip_links = check_page_low_data(cur_page_words, total_word_count)
         if skip_links:
             next_links = []
         else:
@@ -29,6 +29,7 @@ def check_page_low_data(words_freqs, total_word_count):
     if meaningful_word_count / total_word_count < MEANINGFUL_WORDCOUNT_RATIO:
         return True
     return False
+
 def extract_link_information(url, resp, stopWords, getWordCount=False) -> list[ list[str], dict[str], int]:
     soup = BeautifulSoup(resp.raw_response.content)
     # What if the information successfully returned from site is not good
