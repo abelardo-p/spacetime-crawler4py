@@ -7,7 +7,7 @@ from data import CrawledData
 
 # 
 MIN_TEXT_THRESHOLD = 50
-MEANINGFUL_WORDCOUT_RATIO = 0.5
+MEANINGFUL_WORDCOUNT_RATIO = 0.5
 
 def scraper(url, resp, stopWords: dict[str]) -> list[ list[str], dict[str], int]:
     next_links, cur_page_words, total_word_count = [], {}, 0
@@ -25,7 +25,7 @@ def check_page_low_data(words_freqs, total_word_count):
     if total_word_count < MIN_TEXT_THRESHOLD:
         return True
     meaningful_word_count = sum(words_freqs.values())
-    if meaningful_word_count / total_word_count < MEANINGFUL_WORDCOUT_RATIO:
+    if meaningful_word_count / total_word_count < MEANINGFUL_WORDCOUNT_RATIO:
         return True
     return False
 
