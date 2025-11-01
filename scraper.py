@@ -15,6 +15,8 @@ def scraper(url, resp, stopWords: dict[str]) -> list[ list[str], dict[str], int]
     
 def extract_link_information(url, resp, stopWords) -> list[ list[str], dict[str : int], int]:
     soup = BeautifulSoup(resp.raw_response.content)
+
+    # What if the information successfully returned from site is not good
     tokenizer = tokenize(soup.stripped_strings, stopWords, countWords=True)
     links = extract_next_links(url, resp, soup)
     return links, tokenizer.getTokens(), tokenizer.getTotalWordCount()
