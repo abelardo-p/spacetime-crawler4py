@@ -10,3 +10,4 @@ Loop detection
 
 Low value sites
 
+Politeness per-domain
