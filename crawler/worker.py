@@ -2,7 +2,7 @@ from threading import Thread
 
 from inspect import getsource
 from utils.download import download
-import Counter
+from collections import Counter
 from utils import get_logger
 import scraper
 import time
