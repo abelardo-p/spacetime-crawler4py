@@ -50,28 +50,29 @@ def is_valid(url):
             + r"|rm|smil|wmv|swf|wma|zip|rar|gz)$", parsed.path.lower()):
             return False
         
-        subdom, domain = split_domain_parts(url)
+        subdomain = parsed.hostname
         valid_domains = ('ics.uci.edu', 
                          'cs.uci.edu', 
                          'informatics.uci.edu', 
                          'stat.uci.edu')
-        if not any(domain.endswith(valid_dom) for valid_dom in valid_domains):
+        
+        if not subdomain or not any(subdomain.endswith(valid_dom) for valid_dom in valid_domains):
             return False
-        CrawledData.subdomains[subdom+domain] += 1
+        CrawledData.subdomains[subdomain] += 1
         
         return True
     
     except TypeError:
         print ("TypeError for ", parsed)
 
-def split_domain_parts(url):
-    parsed = urlparse(url)
+
+def split_domain_parts(parsed):
     host = parsed.hostname
     if not host:
         return None, None
 
     parts = host.split('.')
-    # To handle short hosts like 'uci.edu' safely
+
     if len(parts) == 1:
         domain = host
         subdomain = None
