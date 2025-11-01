@@ -5,18 +5,19 @@ from bs4 import BeautifulSoup
 from tokenizer import tokenize
 from data import CrawledData
 
-def scraper(url, resp):
+def scraper(url, resp, stopWords: dict[str]) -> list[ list[str], dict[str], int]:
+    next_links, cur_page_words, total_word_count = [], {}, 0
     if resp.status > 199 and resp.status < 300:
-        next_links, cur_page_words = extract_link_information(url, resp)
+        next_links, cur_page_words, totalWordCount = extract_link_information(url, resp, stopWords)
         next_links = [link for link in next_links if is_valid(link)]
-        return next_links, cur_page_words
-        
+        return next_links, cur_page_words, totalWordCount
+    return next_links, cur_page_words, totalWordCount
     
-def extract_link_information(url, resp) -> list[list[str], dict[str : int]]:
+def extract_link_information(url, resp, stopWords, getWordCount=False) -> list[ list[str], dict[str : int] ]:
     soup = BeautifulSoup(resp.raw_response.content)
-    tokenizer = tokenize(soup.stripped_strings)
+    tokenizer = tokenize(soup.stripped_strings, stopWords, countWords=True)
     links = extract_next_links(url, resp, soup)
-    return links, tokenizer.getTokens()
+    return links, tokenizer.getTokens(), tokenizer.getTotalWordCount()
 
 def extract_next_links(url, resp, soup):
     # Implementation required.
@@ -40,7 +41,7 @@ def is_valid(url):
         if parsed.scheme not in set(["http", "https"]):
             return False
         if not re.match(
-            r".*\.(css|js|bmp|gif|jpe?g|ico"
+            r".*\.(php|css|js|bmp|gif|jpe?g|ico"
             + r"|png|tiff?|mid|mp2|mp3|mp4"
             + r"|wav|avi|mov|mpeg|ram|m4v|mkv|ogg|ogv|pdf"
             + r"|ps|eps|tex|ppt|pptx|doc|docx|xls|xlsx|names"
