@@ -13,7 +13,7 @@ def scraper(url, resp, stopWords: dict[str]) -> list[ list[str], dict[str], int]
         return next_links, cur_page_words, totalWordCount
     return next_links, cur_page_words, total_word_count
     
-def extract_link_information(url, resp, stopWords, getWordCount=False) -> list[ list[str], dict[str : int] ]:
+def extract_link_information(url, resp, stopWords) -> list[ list[str], dict[str : int], int]:
     soup = BeautifulSoup(resp.raw_response.content)
     tokenizer = tokenize(soup.stripped_strings, stopWords, countWords=True)
     links = extract_next_links(url, resp, soup)
