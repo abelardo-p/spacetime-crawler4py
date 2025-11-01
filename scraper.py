@@ -5,13 +5,13 @@ from bs4 import BeautifulSoup
 from tokenizer import tokenize
 from data import CrawledData
 
-# 
+RAW_RESPONSE_TEXT_LIMIT = 1 * 10 ** 6
 MIN_TEXT_THRESHOLD = 50
 MEANINGFUL_WORDCOUNT_RATIO = 0.5
 
 def scraper(url, resp, stopWords: dict[str]) -> list[ list[str], dict[str], int]:
     next_links, cur_page_words, total_word_count = [], {}, 0
-    if resp.status > 199 and resp.status < 300:
+    if resp.status > 199 and resp.status < 300 and len(resp.raw_response.content) < RAW_RESPONSE_TEXT_LIMIT:
         next_links, cur_page_words, total_word_count = extract_link_information(url, resp, stopWords)
         skip_links = check_page_low_data()
         if skip_links:
@@ -31,6 +31,7 @@ def check_page_low_data(words_freqs, total_word_count):
 
 def extract_link_information(url, resp, stopWords, getWordCount=False) -> list[ list[str], dict[str], int]:
     soup = BeautifulSoup(resp.raw_response.content)
+    # What if the information successfully returned from site is not good
     tokenizer = tokenize(soup.stripped_strings, stopWords, countWords=True)
     links = extract_next_links(url, resp, soup)
     return links, tokenizer.getTokens(), tokenizer.getTotalWordCount()

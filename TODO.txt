@@ -7,9 +7,14 @@ Subdomains count: COMPLETED
 
 Loop detection: COMPLETED initial (need to test though)
 
-Low value sites
+Low value sites -> total actual tokens < 50 (2 sentences) & 
+    or total tokens extracted / total tokens encountered including stopwords %
 
 https://isg.ics.uci.edu/events/* is a trap 
 .php is a trap .jsx .tsx
+<<<<<<< HEAD
 
 Politeness per-domain
+=======
+Politeness per-domain
+>>>>>>> origin/abe
