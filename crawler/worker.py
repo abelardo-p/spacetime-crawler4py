@@ -24,7 +24,7 @@ class Worker(Thread):
         assert {getsource(scraper).find(req) for req in {"from urllib.request import", "import urllib.request"}} == {-1}, "Do not use urllib.request in scraper.py"
         super().__init__(daemon=True)
 
-        self.stopWords = getStopWords()
+        self.stopWords = getStopWords(STOP_WORD_FILE)
         
     def run(self):
         while True:
@@ -44,15 +44,13 @@ class Worker(Thread):
             self.frontier.mark_url_complete(tbd_url)
             time.sleep(self.config.time_delay)
 
-def getStopWords(self) -> dict[str]:
-
-
-    stopWords = {}
-    path = Path(STOP_WORD_FILE)
+def getStopWords(path: str) -> dict[str]:
+    stopWords = set()
+    path = Path(path)
     try:
         with path.open(encoding='utf-8', errors='replace') as file:
             stopWordTokenizer = tokenize(file)
-            stopWords = stopWordTokenizer.getTokens()
+            stopWords.update(stopWordTokenizer.getTokens().keys())
     except OSError:
         print(f"Could not open file: {path}")
     finally:

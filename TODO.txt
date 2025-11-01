@@ -1,5 +1,5 @@
 Abe:
-Load stopwords in worker and pass to scraper and tokenizer 
+Load stopwords in worker and pass to scraper and tokenizer: COMPLETED (probably working haven't tested)
 
 Anika:
 Post process site information from 2 maps
