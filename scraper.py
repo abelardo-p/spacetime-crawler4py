@@ -6,11 +6,11 @@ from tokenizer import tokenize
 from data import *
 from pathlib import Path
 import json 
-from typing import Tuple, List, Dict
+# from typing import Tuple, List, Dict
 
 DEBUG = True
 
-def scraper(url: str, resp, stopWords: set[str]) -> Tuple[List[str], Dict[str, int], int]:
+def scraper(url: str, resp, stopWords: set[str]) -> tuple[list[str], dict[str, int], int]:
     next_links, cur_page_words, total_word_count = [], {}, 0
 
     if resp.status > 199 and resp.status < 300 and len(resp.raw_response.content) < RAW_RESPONSE_TEXT_LIMIT:
@@ -33,7 +33,7 @@ def check_page_low_data(words_freqs, total_word_count):
         return True
     return False
 
-def extract_link_information(url, resp, stopWords) -> list[ list[str], dict[str], int]:
+def extract_link_information(url, resp, stopWords) -> tuple[ list[str], dict[str, int], int]:
     soup = BeautifulSoup(resp.raw_response.content, "html.parser")
     # What if the information successfully returned from site is not good
     tokenizer = tokenize(soup.stripped_strings, stopWords, countWords=True)
