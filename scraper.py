@@ -68,7 +68,8 @@ def is_valid(url, parent_url):
             return False
         if len(url) > MAX_URL_LEN or (parsed.query and len(parsed.query.split('&')) > NUM_QUERY_PARAMS_THRESHOLD):
             return False
-        
+        if in_blacklist(url, parsed):
+            return False
         subdomain = parsed.hostname
         valid_domains = ('ics.uci.edu', 
                          'cs.uci.edu', 
@@ -104,6 +105,13 @@ def canonicalize(parsed):
     # Sort query params
     query = "&".join(sorted(parsed.query.split("&"))) if parsed.query else ""
     return urlunparse((scheme, netloc, path, "", query, ""))
+
+def in_blacklist(url, parsed):
+    if 'isg.ics.uci.edu' in parsed.hostname and 'events' in parsed.path:
+        return True
+    if 'gitlab.ics.uci.edu' in url:
+        return True
+    return False
 
 def output_to_debug_file(response, links, tokens, count):
     path = Path("./debug.txt")
