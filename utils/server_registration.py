@@ -1,4 +1,6 @@
 import os
+import multiprocessing
+multiprocessing.set_start_method('fork')
 from spacetime import Node
 from utils.pcc_models import Register
 

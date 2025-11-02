@@ -18,11 +18,11 @@ data_output_dir = '/output'
 
 @dataclass
 class CrawledData:
-    word_freqs: ClassVar[Counter[str]] = Counter()
-    links_to_words : ClassVar[Counter[str]] = Counter()
+    word_freqs: ClassVar[Counter] = Counter()
+    links_to_words : ClassVar[Counter] = Counter()
     # using a separate set (visited) to also store urls of invalid urls; values hold depth from seed
     visited: ClassVar[dict] = {seed_url: 0}
-    subdomains: ClassVar[Counter[str]] = Counter()
+    subdomains: ClassVar[Counter] = Counter()
 
 def output_stats():
     word_freqs_df = pd.DataFrame.from_dict(CrawledData.word_freqs, orient='index', columns=['count'])
