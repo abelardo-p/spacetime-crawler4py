@@ -4,17 +4,23 @@ from urllib.parse import urlparse, urlunparse, urljoin
 from bs4 import BeautifulSoup
 from tokenizer import tokenize
 from data import *
+from pathlib import Path
+import json 
 
+DEBUG = True
 
 def scraper(url, resp, stopWords: dict[str]) -> list[ list[str], dict[str], int]:
     next_links, cur_page_words, total_word_count = [], {}, 0
+
     if resp.status > 199 and resp.status < 300 and len(resp.raw_response.content) < RAW_RESPONSE_TEXT_LIMIT:
         next_links, cur_page_words, total_word_count = extract_link_information(url, resp, stopWords)
-        skip_links = check_page_low_data(cur_page_words, total_word_count)
-        if skip_links:
+        invalid_page = check_page_low_data(cur_page_words, total_word_count)
+        if invalid_page:
             next_links = []
         else:
             next_links = [link for link in next_links if is_valid(link, url)]
+
+    if DEBUG: output_to_debug_file(resp, next_links, cur_page_words, total_word_count)
     return next_links, cur_page_words, total_word_count
 
 def check_page_low_data(words_freqs, total_word_count):
@@ -34,15 +40,6 @@ def extract_link_information(url, resp, stopWords) -> list[ list[str], dict[str]
     return links, tokenizer.getTokens(), tokenizer.getTotalWordCount()
 
 def extract_next_links(url, resp, soup):
-    # Implementation required.
-    # url: the URL that was used to get the page
-    # resp.url: the actual url of the page
-    # resp.status: the status code returned by the server. 200 is OK, you got the page. Other numbers mean that there was some kind of problem.
-    # resp.error: when status is not 200, you can check the error here, if needed.
-    # resp.raw_response: this is where the page actually is. More specifically, the raw_response has two parts:
-    #         resp.raw_response.url: the url, again
-    #         resp.raw_response.content: the content of the page!
-    # Return a list with the hyperlinks (as strings) scrapped from resp.raw_response.content
     links = []
     for tag in soup.find_all('a', href=True):
         href = tag['href'].split('#')[0]   # defragment
@@ -106,3 +103,19 @@ def canonicalize(parsed):
     # Sort query params
     query = "&".join(sorted(parsed.query.split("&"))) if parsed.query else ""
     return urlunparse((scheme, netloc, path, "", query, ""))
+
+def output_to_debug_file(response, links, tokens, count):
+    path = Path("./debug.txt")
+    try: 
+        with path.open(mode='a', encoding='utf-8', errors='replace') as file:
+            scrape_data = {
+                'response': response, 
+                'links': links,
+                'tokens': tokens,
+                'count': count
+            }
+            json.dump(scrape_data, file)
+            file.write('\n')
+    except OSError:
+        print(f"Could not open file: {path}")
+
