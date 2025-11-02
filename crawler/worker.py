@@ -1,5 +1,5 @@
 from threading import Thread
-from data import CrawledData, seed_url
+from data import CrawledData, output_stats
 from inspect import getsource
 from utils.download import download
 from utils import get_logger
@@ -40,6 +40,9 @@ class Worker(Thread):
                 self.frontier.add_url(scraped_url)
             self.frontier.mark_url_complete(tbd_url)
             time.sleep(self.config.time_delay)
+        
+        output_stats()
+
 
 def getStopWords(path: str) -> dict[str]:
     stopWords = set()
