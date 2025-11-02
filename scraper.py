@@ -6,10 +6,11 @@ from tokenizer import tokenize
 from data import *
 from pathlib import Path
 import json 
+from typing import Tuple, List, Dict
 
 DEBUG = True
 
-def scraper(url, resp, stopWords: dict[str]) -> list[ list[str], dict[str], int]:
+def scraper(url: str, resp, stopWords: set[str]) -> Tuple[List[str], Dict[str, int], int]:
     next_links, cur_page_words, total_word_count = [], {}, 0
 
     if resp.status > 199 and resp.status < 300 and len(resp.raw_response.content) < RAW_RESPONSE_TEXT_LIMIT:
@@ -33,7 +34,7 @@ def check_page_low_data(words_freqs, total_word_count):
     return False
 
 def extract_link_information(url, resp, stopWords) -> list[ list[str], dict[str], int]:
-    soup = BeautifulSoup(resp.raw_response.content)
+    soup = BeautifulSoup(resp.raw_response.content, "html.parser")
     # What if the information successfully returned from site is not good
     tokenizer = tokenize(soup.stripped_strings, stopWords, countWords=True)
     links = extract_next_links(url, resp, soup)
@@ -47,7 +48,7 @@ def extract_next_links(url, resp, soup):
         links.append(abs_url)
     return links
 
-def is_valid(url, parent_url=None):
+def is_valid(url, parent_url):
     # Decide whether to crawl this url or not. 
     # If you decide to crawl it, return True; otherwise return False.
     # There are already some conditions that return False.
@@ -55,7 +56,7 @@ def is_valid(url, parent_url=None):
         parsed = urlparse(url)
         if parsed.scheme not in set(["http", "https"]):
             return False
-        if not re.match(
+        if re.match(
             r".*\.(php|css|js|bmp|gif|jpe?g|ico"
             + r"|png|tiff?|mid|mp2|mp3|mp4"
             + r"|wav|avi|mov|mpeg|ram|m4v|mkv|ogg|ogv|pdf"
@@ -65,7 +66,7 @@ def is_valid(url, parent_url=None):
             + r"|thmx|mso|arff|rtf|jar|csv"
             + r"|rm|smil|wmv|swf|wma|zip|rar|gz)$", parsed.path.lower()):
             return False
-        if len(url) > 200 or url.count('&') > NUM_QUERY_PARAMS_THRESHOLD:
+        if len(url) > MAX_URL_LEN or (parsed.query and len(parsed.query.split('&')) > NUM_QUERY_PARAMS_THRESHOLD):
             return False
         
         subdomain = parsed.hostname
@@ -83,9 +84,9 @@ def is_valid(url, parent_url=None):
         if canonicalized_url in CrawledData.visited:
             return False
         new_depth = CrawledData.visited[parent_url] + 1
+        CrawledData.visited[canonicalized_url] = new_depth
         if new_depth > MAX_DEPTH:
             return False
-        CrawledData.visited[canonicalized_url] = new_depth
         return True
  
     except TypeError:
@@ -109,7 +110,8 @@ def output_to_debug_file(response, links, tokens, count):
     try: 
         with path.open(mode='a', encoding='utf-8', errors='replace') as file:
             scrape_data = {
-                'response': response, 
+                'url': response.url,
+                'status': response.status,
                 'links': links,
                 'tokens': tokens,
                 'count': count
