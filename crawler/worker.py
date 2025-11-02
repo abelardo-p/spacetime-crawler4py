@@ -44,7 +44,7 @@ class Worker(Thread):
         output_stats()
 
 
-def getStopWords(path: str) -> dict[str]:
+def getStopWords(path: str) -> set[str]:
     stopWords = set()
     path = Path(path)
     try:
