@@ -1,4 +1,4 @@
-dimport os
+import os
 import shelve
 
 from threading import Thread, RLock
