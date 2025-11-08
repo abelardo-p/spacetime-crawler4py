@@ -2,7 +2,7 @@ import re
 import os
 from urllib.parse import urlparse, urlunparse, urljoin
 from bs4 import BeautifulSoup
-from tokenizer import tokenize
+from tokenizer.tokenize import Tokenize
 from data import *
 from pathlib import Path
 import json 
@@ -36,7 +36,7 @@ def check_page_low_data(words_freqs, total_word_count):
 def extract_link_information(url, resp, stopWords) -> Tuple[List[str], Dict[str, int], int]:
     soup = BeautifulSoup(resp.raw_response.content, "html.parser")
     # What if the information successfully returned from site is not good
-    tokenizer = tokenize(soup.stripped_strings, stopWords, countWords=True)
+    tokenizer = Tokenize(soup.stripped_strings, stopWords, countWords=True)
     links = extract_next_links(url, resp, soup)
     return links, tokenizer.getTokens(), tokenizer.getTotalWordCount()
 
