@@ -12,7 +12,6 @@ DEBUG = True
 
 def scraper(url: str, resp, stopWords: Set[str]) -> Tuple[List[str], Dict[str, int], int]:
     next_links, cur_page_words, total_word_count = [], {}, 0
-    print(url)
     if resp.status > 199 and resp.status < 300 and len(resp.raw_response.content) < RAW_RESPONSE_TEXT_LIMIT:
         next_links, cur_page_words, total_word_count = extract_link_information(url, resp, stopWords)
         invalid_page = check_page_low_data(cur_page_words, total_word_count)
@@ -37,7 +36,7 @@ def extract_link_information(url, resp, stopWords) -> Tuple[List[str], Dict[str,
     soup = BeautifulSoup(resp.raw_response.content, "html.parser")
     # What if the information successfully returned from site is not good
     tokenizer = Tokenize(soup.stripped_strings, stopWords, countWords=True)
-    links = extract_next_links(url, resp, soup)
+    links = extract_next_links(resp, soup)
     return links, tokenizer.getTokens(), tokenizer.getTotalWordCount()
 
 def extract_next_links(resp, soup):
@@ -102,7 +101,7 @@ def in_blacklist(url, parsed):
         return True
     if 'eppstein/pix' in parsed.path.lower():
         return True
-    if parsed.hostname and 'wics.ics' in parsed.hostname:
+    if parsed.o and 'wics.ics' in parsed.hostname:
         return True
     if 'ical' in url or 'tribe' in url:
         return True
