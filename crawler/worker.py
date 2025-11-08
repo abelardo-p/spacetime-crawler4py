@@ -6,10 +6,10 @@ from utils import get_logger
 import scraper
 import time
 from pathlib import Path
-from tokenizer import tokenize
+from tokenizer.tokenize import Tokenize
 from typing import Tuple, List, Dict, Set
 
-STOP_WORD_FILE = '../stopwords.txt'
+STOP_WORD_FILE = './stopwords.txt'
 
 class Worker(Thread):
 
@@ -50,7 +50,7 @@ def getStopWords(path: str) -> Set[str]:
     path = Path(path)
     try:
         with path.open(encoding='utf-8', errors='replace') as file:
-            stopWordTokenizer = tokenize(file)
+            stopWordTokenizer = Tokenize(file)
             stopWords.update(stopWordTokenizer.getTokens().keys())
             return stopWords
     except OSError:

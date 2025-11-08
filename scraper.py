@@ -12,7 +12,6 @@ DEBUG = True
 
 def scraper(url: str, resp, stopWords: Set[str]) -> Tuple[List[str], Dict[str, int], int]:
     next_links, cur_page_words, total_word_count = [], {}, 0
-    print(url)
     if resp.status > 199 and resp.status < 300 and len(resp.raw_response.content) < RAW_RESPONSE_TEXT_LIMIT:
         next_links, cur_page_words, total_word_count = extract_link_information(url, resp, stopWords)
         invalid_page = check_page_low_data(cur_page_words, total_word_count)

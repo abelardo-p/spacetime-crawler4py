@@ -7,14 +7,14 @@ import os
 seed_url = "http://www.ics.uci.edu"
 
 RAW_RESPONSE_TEXT_LIMIT = 1 * 10 ** 6
-MIN_TEXT_THRESHOLD = 50
+MIN_TEXT_THRESHOLD = 25
 MEANINGFUL_WORDCOUNT_RATIO = 0.35
-MAX_DEPTH = 50
+MAX_DEPTH = 100
 
-NUM_QUERY_PARAMS_THRESHOLD = 5
-MAX_URL_LEN = 200
+NUM_QUERY_PARAMS_THRESHOLD = 10
+MAX_URL_LEN = 400
 
-data_output_dir = '/output'
+data_output_dir = './output'
 
 @dataclass
 class CrawledData:
