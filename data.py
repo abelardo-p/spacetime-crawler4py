@@ -14,7 +14,7 @@ MAX_DEPTH = 50
 NUM_QUERY_PARAMS_THRESHOLD = 5
 MAX_URL_LEN = 200
 
-data_output_dir = '/output'
+data_output_dir = './output'
 
 @dataclass
 class CrawledData:
