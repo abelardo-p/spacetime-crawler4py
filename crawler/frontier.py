@@ -5,7 +5,8 @@ from threading import Thread, RLock
 from queue import Queue, Empty
 
 from utils import get_logger, get_urlhash, normalize
-from scraper import is_valid
+from scraper import is_valid, canonicalize
+from data import *
 
 class Frontier(object):
     def __init__(self, config, restart):
@@ -53,9 +54,20 @@ class Frontier(object):
         except IndexError:
             return None
 
-    def add_url(self, url):
+    def add_url(self, url, parent_url=None):
         url = normalize(url)
         urlhash = get_urlhash(url)
+
+        # Can add a lock here 
+        if parent_url:
+            new_depth = CrawledData.visited.get(parent_url, 0) + 1
+        else:
+            new_depth = 0
+
+        if new_depth > MAX_DEPTH:
+            return
+        CrawledData.visited[url] = new_depth
+
         if urlhash not in self.save:
             self.save[urlhash] = (url, False)
             self.save.sync()

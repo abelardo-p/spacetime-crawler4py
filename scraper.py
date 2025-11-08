@@ -48,7 +48,7 @@ def extract_next_links(url, resp, soup):
         links.append(abs_url)
     return links
 
-def is_valid(url, parent_url):
+def is_valid(url, parent_url=None):
     # Decide whether to crawl this url or not. 
     # If you decide to crawl it, return True; otherwise return False.
     # There are already some conditions that return False.
@@ -79,15 +79,6 @@ def is_valid(url, parent_url):
         if not subdomain or not any(subdomain.endswith(valid_dom) for valid_dom in valid_domains):
             return False
         CrawledData.subdomains[subdomain] += 1
-
-        canonicalized_url = canonicalize(parsed)
-        parent_url = canonicalize(parent_url)
-        if canonicalized_url in CrawledData.visited:
-            return False
-        new_depth = CrawledData.visited[parent_url] + 1
-        CrawledData.visited[canonicalized_url] = new_depth
-        if new_depth > MAX_DEPTH:
-            return False
         return True
  
     except TypeError:
