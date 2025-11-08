@@ -47,7 +47,7 @@ def extract_next_links(url, resp, soup):
         links.append(abs_url)
     return links
 
-def is_valid(url, parent_url=None):
+def is_valid(url):
     # Decide whether to crawl this url or not. 
     # If you decide to crawl it, return True; otherwise return False.
     # There are already some conditions that return False.
@@ -87,17 +87,16 @@ def is_valid(url, parent_url=None):
         print ("ValueError for ", parsed)
         return False
 
-def canonicalize(parsed):
-    scheme = parsed.scheme.lower()
-    netloc = parsed.hostname.lower()
-    # Normalize path
-    path = "/" + os.path.normpath(parsed.path).lstrip("/")
-    # Sort query params
-    query = "&".join(sorted(parsed.query.split("&"))) if parsed.query else ""
-    return urlunparse((scheme, netloc, path, "", query, ""))
-
 def in_blacklist(url, parsed):
-    if 'isg.ics.uci.edu' in parsed.hostname and 'events' in parsed.path:
+    if parsed.hostname and 'ics.uci.edu' in parsed.hostname and 'events' in parsed.path.lower():
+        return True
+    if parsed.hostname and 'grape.ics' in parsed.hostname:
+        return True
+    if 'eppstein/pix' in parsed.path.lower():
+        return True
+    if parsed.o and 'wics.ics' in parsed.hostname:
+        return True
+    if 'ical' in url or 'tribe' in url:
         return True
     if 'gitlab.ics.uci.edu' in url:
         return True
