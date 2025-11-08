@@ -51,7 +51,7 @@ def getStopWords(path: str) -> Set[str]:
     try:
         with path.open(encoding='utf-8', errors='replace') as file:
             stopWordTokenizer = Tokenize(file)
-            stopWords.update(stopWordTokenizer.getTokens().keys())
+            stopWords.update(stopWordTokenizer.getTokenMap().keys())
             return stopWords
     except OSError:
         print(f"Could not open file: {path}")
