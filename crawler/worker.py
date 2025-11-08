@@ -38,7 +38,7 @@ class Worker(Thread):
             CrawledData.word_freqs.update(cur_page_words)
             CrawledData.links_to_words[tbd_url] = cur_page_word_count
             for scraped_url in scraped_urls:
-                self.frontier.add_url(scraped_url)
+                self.frontier.add_url(scraped_url, tbd_url)
             self.frontier.mark_url_complete(tbd_url)
             time.sleep(self.config.time_delay)
         
