@@ -32,7 +32,7 @@ def check_page_low_data(words_freqs, total_word_count):
         return True
     return False
 
-def extract_link_information(url, resp, stopWords) -> Tuple[List[str], Dict[str, int], int]:
+def extract_link_information(resp, stopWords) -> Tuple[List[str], Dict[str, int], int]:
     soup = BeautifulSoup(resp.raw_response.content, "html.parser")
     # What if the information successfully returned from site is not good
     tokenizer = Tokenize(soup.stripped_strings, stopWords, countWords=True)
@@ -95,13 +95,16 @@ def is_valid(url):
         return False
 
 def in_blacklist(url, parsed):
-    if parsed.hostname and 'ics.uci.edu' in parsed.hostname and 'events' in parsed.path.lower():
-        return True
+    if parsed.hostname and 'ics.uci.edu' in parsed.hostname:
+        if 'events' in parsed.path.lower():
+            return True
+        if 'people' in parsed.path.lower():
+            return True
     if parsed.hostname and 'grape.ics' in parsed.hostname:
         return True
     if 'eppstein/pix' in parsed.path.lower():
         return True
-    if parsed.o and 'wics.ics' in parsed.hostname:
+    if parsed.hostname and 'wics.ics' in parsed.hostname:
         return True
     if 'ical' in url or 'tribe' in url:
         return True
