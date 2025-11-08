@@ -11,14 +11,18 @@ class Tokenize:
         self.stopWords = stopWords if stopWords else set()
         self.countWords = countWords
         self.wordCount = 0
-        self.tokens = {}
-        self.tokenize(input, self.tokens)
+        self.tokenMap = {}
+        self.tokenList = []
+        self.tokenize(input, self.tokenMap, self.tokenList)
 
     def getTotalWordCount(self):
         return self.wordCount
     
-    def getTokens(self):
-        return self.tokens
+    def getTokenMap(self):
+        return self.tokenMap
+
+    def getTokenList(self):
+        return self.tokenList
     
     def extractTokens(self, line: str) -> Generator[str, None, None]:
         left = 0
@@ -33,14 +37,15 @@ class Tokenize:
             if self.countWords: self.wordCount += 1
             yield line[left : len(line)].lower()
 
-    def tokenize(self, input, tokenDict) -> None:
+    def tokenize(self, input, tokenMap, tokenList) -> None:
         for line in input:
             for token in self.extractTokens(line):
                 if token in self.stopWords: continue
-                if token in tokenDict:
-                    tokenDict[token] += 1
+                tokenList.append(token)
+                if token in tokenMap:
+                    tokenMap[token] += 1
                 else:
-                    tokenDict[token] = 1
+                    tokenMap[token] = 1
 
     def print(self) -> None:
         frequency = lambda x: self.tokens[x]

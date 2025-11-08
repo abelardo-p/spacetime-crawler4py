@@ -18,7 +18,7 @@ def scraper(url: str, resp, stopWords: Set[str]) -> Tuple[List[str], Dict[str, i
         if invalid_page:
             next_links = []
         else:
-            next_links = [link for link in next_links if is_valid(link, url)]
+            next_links = [link for link in next_links if is_valid(link)]
 
     if DEBUG: output_to_debug_file(resp, next_links, cur_page_words, total_word_count)
     return next_links, cur_page_words, total_word_count
@@ -37,7 +37,7 @@ def extract_link_information(resp, stopWords) -> Tuple[List[str], Dict[str, int]
     # What if the information successfully returned from site is not good
     tokenizer = Tokenize(soup.stripped_strings, stopWords, countWords=True)
     links = extract_next_links(resp, soup)
-    return links, tokenizer.getTokens(), tokenizer.getTotalWordCount()
+    return links, tokenizer.getTokenMap(), tokenizer.getTotalWordCount()
 
 def extract_next_links(resp, soup):
     links = []
