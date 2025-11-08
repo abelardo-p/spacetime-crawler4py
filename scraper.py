@@ -36,7 +36,7 @@ def extract_link_information(url, resp, stopWords) -> Tuple[List[str], Dict[str,
     soup = BeautifulSoup(resp.raw_response.content, "html.parser")
     # What if the information successfully returned from site is not good
     tokenizer = Tokenize(soup.stripped_strings, stopWords, countWords=True)
-    links = extract_next_links(url, resp, soup)
+    links = extract_next_links(resp, soup)
     return links, tokenizer.getTokens(), tokenizer.getTotalWordCount()
 
 def extract_next_links(resp, soup):
