@@ -110,3 +110,5 @@ venv.bak/
 *.shelve
 
 config.ini
+
+cs-121-env
