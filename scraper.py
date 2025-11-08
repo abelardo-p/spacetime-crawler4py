@@ -39,11 +39,16 @@ def extract_link_information(url, resp, stopWords) -> Tuple[List[str], Dict[str,
     links = extract_next_links(url, resp, soup)
     return links, tokenizer.getTokens(), tokenizer.getTotalWordCount()
 
-def extract_next_links(url, resp, soup):
+def extract_next_links(resp, soup):
     links = []
+    if not resp.url:
+        return links
     for tag in soup.find_all('a', href=True):
         href = tag['href'].split('#')[0]   # defragment
-        abs_url = urljoin(resp.url, href)  # resolve relative paths
+        try:
+            abs_url = urljoin(resp.url, href)  # resolve relative paths
+        except ValueError:
+            continue
         links.append(abs_url)
     return links
 
@@ -52,6 +57,8 @@ def is_valid(url):
     # If you decide to crawl it, return True; otherwise return False.
     # There are already some conditions that return False.
     try:
+        if not url:
+            return False
         parsed = urlparse(url)
         if parsed.scheme not in set(["http", "https"]):
             return False
