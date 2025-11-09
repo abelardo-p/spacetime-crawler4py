@@ -7,7 +7,6 @@ import scraper
 import time
 from pathlib import Path
 from tokenizer.tokenize import Tokenize
-from typing import Tuple, List, Dict, Set
 
 STOP_WORD_FILE = './stopwords.txt'
 
@@ -30,22 +29,27 @@ class Worker(Thread):
             if not tbd_url:
                 self.logger.info("Frontier is empty. Stopping Crawler.")
                 break
+
+            # CHECK ELAPSED TIME HERE
+            self.frontier.wait_for_politeness(tbd_url, self.config.time_delay)
+
             resp = download(tbd_url, self.config, self.logger)
             self.logger.info(
                 f"Downloaded {tbd_url}, status <{resp.status}>, "
                 f"using cache {self.config.cache_server}.")
             scraped_urls, cur_page_words, cur_page_word_count = scraper.scraper(tbd_url, resp, self.stopWords)
-            CrawledData.word_freqs.update(cur_page_words)
-            CrawledData.links_to_words[tbd_url] = cur_page_word_count
+            with CrawledData.lock:
+                CrawledData.word_freqs.update(cur_page_words)
+                CrawledData.links_to_words[tbd_url] = cur_page_word_count
             for scraped_url in scraped_urls:
                 self.frontier.add_url(scraped_url, tbd_url)
             self.frontier.mark_url_complete(tbd_url)
-            time.sleep(self.config.time_delay)
+            #time.sleep(self.config.time_delay)
         
-        output_stats()
+        # output_stats()
 
 
-def getStopWords(path: str) -> Set[str]:
+def getStopWords(path: str) -> set[str]:
     stopWords = set()
     path = Path(path)
     try:

@@ -4,7 +4,8 @@ from dataclasses import dataclass
 import pandas as pd
 import os
 
-import threading
+from threading import Lock
+
 seed_url = "http://www.ics.uci.edu"
 
 # Tune as needed
@@ -18,7 +19,7 @@ MAX_URL_LEN = 200
 
 # Using Jaccard similarity
 N_GRAMS = 3
-NEAR_SIMILARITY_THRESHOLD = 0.5
+NEAR_SIMILARITY_THRESHOLD = 0.9
 
 
 
@@ -32,7 +33,7 @@ class CrawledData:
     # using a separate set (visited) to also store urls of invalid urls; values hold depth from seed
     visited: ClassVar[dict] = {seed_url: 0}
     page_hashes: ClassVar[set] = set()
-    page_n_grams: ClassVar[set] = set()
+    page_n_grams: ClassVar[list] = []
 
 def output_stats():
     word_freqs_df = pd.DataFrame.from_dict(CrawledData.word_freqs, orient='index', columns=['count'])
@@ -45,3 +46,4 @@ def output_stats():
     subdomains_df.to_csv(os.path.join(data_output_dir, 'subdomain_counts.csv'))
 
     
+CrawledData.lock = Lock()
