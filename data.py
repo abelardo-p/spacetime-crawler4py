@@ -9,7 +9,7 @@ seed_url = "http://www.ics.uci.edu"
 RAW_RESPONSE_TEXT_LIMIT = 1 * 10 ** 6
 MIN_TEXT_THRESHOLD = 25
 MEANINGFUL_WORDCOUNT_RATIO = 0.35
-MAX_DEPTH = 100
+MAX_DEPTH = 125
 
 NUM_QUERY_PARAMS_THRESHOLD = 10
 MAX_URL_LEN = 400
@@ -32,6 +32,6 @@ def output_stats():
     links_to_words_df.to_csv(os.path.join(data_output_dir, 'word_count_per_link.csv'))
 
     subdomains_df = pd.DataFrame.from_dict(CrawledData.subdomains, orient='index', columns=['count'])
-    subdomains_df.to_csv(os.path.join(data_output_dir, 'subdomain_counts.csv'))
+    subdomains_df.tao_csv(os.path.join(data_output_dir, 'subdomain_counts.csv'))
 
     
