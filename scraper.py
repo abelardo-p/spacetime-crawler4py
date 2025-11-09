@@ -7,14 +7,17 @@ from data import *
 from pathlib import Path
 import json 
 from typing import Tuple, List, Dict, Set
+from sim_detection import exact_match, near_match
 
 DEBUG = True
 
 def scraper(url: str, resp, stopWords: Set[str]) -> Tuple[List[str], Dict[str, int], int]:
     next_links, cur_page_words, total_word_count = [], {}, 0
     if resp.status > 199 and resp.status < 300 and len(resp.raw_response.content) < RAW_RESPONSE_TEXT_LIMIT:
-        next_links, cur_page_words, total_word_count = extract_link_information(url, resp, stopWords)
-        invalid_page = check_page_low_data(cur_page_words, total_word_count)
+        next_links, tokens, cur_page_words, total_word_count = extract_link_information(url, resp, stopWords)
+        invalid_page = (exact_match(tokens) or 
+                        near_match(tokens) or 
+                        check_page_low_data(cur_page_words, total_word_count) )
         if invalid_page:
             next_links = []
         else:
@@ -22,7 +25,7 @@ def scraper(url: str, resp, stopWords: Set[str]) -> Tuple[List[str], Dict[str, i
 
     if DEBUG: output_to_debug_file(resp, next_links, cur_page_words, total_word_count)
     return next_links, cur_page_words, total_word_count
-
+    
 def check_page_low_data(words_freqs, total_word_count):
     """Returns true if the links on this page should be skipped"""
     if total_word_count < MIN_TEXT_THRESHOLD:
@@ -37,7 +40,7 @@ def extract_link_information(resp, stopWords) -> Tuple[List[str], Dict[str, int]
     # What if the information successfully returned from site is not good
     tokenizer = Tokenize(soup.stripped_strings, stopWords, countWords=True)
     links = extract_next_links(resp, soup)
-    return links, tokenizer.getTokenMap(), tokenizer.getTotalWordCount()
+    return links, tokenizer.getTokenList(), tokenizer.getTokenMap(), tokenizer.getTotalWordCount()
 
 def extract_next_links(resp, soup):
     links = []
