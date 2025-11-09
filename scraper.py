@@ -1,5 +1,4 @@
 import re
-import os
 from urllib.parse import urlparse, urlunparse, urljoin
 from bs4 import BeautifulSoup
 from tokenizer.tokenize import Tokenize
@@ -56,9 +55,6 @@ def extract_next_links(resp, soup):
     return links
 
 def is_valid(url):
-    # Decide whether to crawl this url or not. 
-    # If you decide to crawl it, return True; otherwise return False.
-    # There are already some conditions that return False.
     try:
         if not url:
             return False
