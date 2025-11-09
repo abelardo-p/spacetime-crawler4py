@@ -4,20 +4,23 @@ from dataclasses import dataclass
 import pandas as pd
 import os
 
+import threading
 seed_url = "http://www.ics.uci.edu"
 
 # Tune as needed
 RAW_RESPONSE_TEXT_LIMIT = 1 * 10 ** 6
 MIN_TEXT_THRESHOLD = 25
 MEANINGFUL_WORDCOUNT_RATIO = 0.35
-MAX_DEPTH = 100
+MAX_DEPTH = 125
 
 NUM_QUERY_PARAMS_THRESHOLD = 10
-MAX_URL_LEN = 400
+MAX_URL_LEN = 200
 
 # Using Jaccard similarity
 N_GRAMS = 3
 NEAR_SIMILARITY_THRESHOLD = 0.5
+
+
 
 data_output_dir = './output'
 
