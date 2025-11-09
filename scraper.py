@@ -87,7 +87,10 @@ def is_valid(url):
         
         if not subdomain or not any(subdomain.endswith(valid_dom) for valid_dom in valid_domains):
             return False
+        if subdomain.startswith('www.'):
+            subdomain = subdomain.lstrip("w.")
         CrawledData.subdomains[subdomain] += 1
+
         return True
  
     except TypeError:
