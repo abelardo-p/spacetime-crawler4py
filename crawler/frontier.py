@@ -73,16 +73,22 @@ class Frontier(object):
         urlhash = get_urlhash(url)
 
         # Can add a lock here 
+        new_depth = 0
         if parent_url:
             with self.visited_lock:
                 new_depth = CrawledData.visited.get(parent_url, 0) + 1
-        else:
-            new_depth = 0
-
         if new_depth > MAX_DEPTH:
             return
+        
+        subdomain = urlparse(url).hostname
+        subdomain = subdomain.lower()
+        if subdomain.startswith('www.'):
+            subdomain = subdomain[len('www.'):]
+
         with self.visited_lock:
             CrawledData.visited[url] = new_depth
+        with CrawledData.lock:
+            CrawledData.subdomains[subdomain] += 1
 
         with self.save_lock:
             if urlhash not in self.save:

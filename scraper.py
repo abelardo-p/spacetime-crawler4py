@@ -12,7 +12,9 @@ DEBUG = True
 
 def scraper(url: str, resp, stopWords: Set[str]) -> Tuple[List[str], Dict[str, int], int]:
     next_links, cur_page_words, total_word_count = [], {}, 0
-    if resp.status > 199 and resp.status < 300 and len(resp.raw_response.content) < RAW_RESPONSE_TEXT_LIMIT:
+    if  (resp.status > 199 and resp.status < 300 and 
+         is_valid(resp.url) and 
+         len(resp.raw_response.content) < RAW_RESPONSE_TEXT_LIMIT ):
         next_links, tokens, cur_page_words, total_word_count = extract_link_information(resp, stopWords)
         invalid_page = (check_page_low_data(cur_page_words, total_word_count) or 
                         exact_match(tokens) or 
@@ -54,6 +56,11 @@ def extract_next_links(resp, soup):
         links.append(abs_url)
     return links
 
+def link_outside_allowed_doms(subdomain):
+    if not subdomain or not any(subdomain.endswith(valid_dom) for valid_dom in valid_domains):
+        return True
+    return False
+    
 def is_valid(url):
     try:
         if not url:
@@ -75,18 +82,10 @@ def is_valid(url):
             return False
         if in_blacklist(url, parsed):
             return False
-        subdomain = parsed.hostname
-        valid_domains = ('ics.uci.edu', 
-                         'cs.uci.edu', 
-                         'informatics.uci.edu', 
-                         'stat.uci.edu')
         
-        if not subdomain or not any(subdomain.endswith(valid_dom) for valid_dom in valid_domains):
+        subdomain = parsed.hostname
+        if link_outside_allowed_doms(subdomain):
             return False
-        if subdomain.startswith('www.'):
-            subdomain = subdomain.lstrip("w.")
-        with CrawledData.lock:
-            CrawledData.subdomains[subdomain] += 1
 
         return True
  

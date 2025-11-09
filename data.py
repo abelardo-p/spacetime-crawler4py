@@ -8,6 +8,11 @@ from threading import Lock
 
 seed_url = "http://www.ics.uci.edu"
 
+valid_domains = ('ics.uci.edu', 
+                'cs.uci.edu', 
+                'informatics.uci.edu', 
+                'stat.uci.edu')
+
 # Tune as needed
 RAW_RESPONSE_TEXT_LIMIT = 1 * 10 ** 6
 MIN_TEXT_THRESHOLD = 25
@@ -31,9 +36,12 @@ class CrawledData:
     links_to_words : ClassVar[Counter] = Counter()
     subdomains: ClassVar[Counter] = Counter()
     # using a separate set (visited) to also store urls of invalid urls; values hold depth from seed
+    # Visited has its own lock separate from the other attributes (which all share one)
     visited: ClassVar[dict] = {seed_url: 0}
     page_hashes: ClassVar[set] = set()
     page_n_grams: ClassVar[list] = []
+
+    lock: ClassVar[Lock] = Lock()
 
 def output_stats():
     word_freqs_df = pd.DataFrame.from_dict(CrawledData.word_freqs, orient='index', columns=['count'])
@@ -46,4 +54,3 @@ def output_stats():
     subdomains_df.to_csv(os.path.join(data_output_dir, 'subdomain_counts.csv'))
 
     
-CrawledData.lock = Lock()

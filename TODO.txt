@@ -12,5 +12,9 @@ Low value sites -> total actual tokens < 50 (2 sentences) &
 
 https://isg.ics.uci.edu/events/* is a trap 
 .php is a trap .jsx .tsx
+<<<<<<< HEAD
 
 Politeness per-domain
+=======
+Politeness per-domain
+>>>>>>> origin/abe

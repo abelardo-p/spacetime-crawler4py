@@ -6,7 +6,7 @@ def hash_content(tokens):
     return hashlib.md5(joined.encode('utf-8')).hexdigest()
 
 def make_n_grams(tokens, n=3):
-    grams = {hash(tuple(tokens[i : i + n])) for i in range(len(tokens) - n + 1)}
+    grams = {' '.join(tokens[i : i + n]) for i in range(len(tokens) - n + 1)}
     return grams
 
 def get_jaccard_similarity(set1grams, set2grams):
