@@ -7,6 +7,7 @@ def hash_content(tokens):
 
 def make_n_grams(tokens, n=3):
     grams = {' '.join(tokens[i : i + n]) for i in range(len(tokens) - n + 1)}
+    # print(grams, type(grams))
     return grams
 
 def get_jaccard_similarity(set1grams, set2grams):
@@ -27,8 +28,8 @@ def near_match(tokens: list[str]):
     NEAR_SIMILARITY_THRESHOLD with any visited page's """
     grams = make_n_grams(tokens, N_GRAMS)
     for visited_page_grams in CrawledData.page_n_grams:
-        sim_score = get_jaccard_similarity(grams, visited_page_grams)
+        sim_score = get_jaccard_similarity(grams, {word for word in visited_page_grams})
         if sim_score >= NEAR_SIMILARITY_THRESHOLD:
             return True
-    CrawledData.page_n_grams.append(grams)
+    CrawledData.page_n_grams.update(grams)
     return False

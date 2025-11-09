@@ -4,6 +4,7 @@ from dataclasses import dataclass
 import pandas as pd
 import os
 
+import threading
 seed_url = "http://www.ics.uci.edu"
 
 # Tune as needed
@@ -41,6 +42,6 @@ def output_stats():
     links_to_words_df.to_csv(os.path.join(data_output_dir, 'word_count_per_link.csv'))
 
     subdomains_df = pd.DataFrame.from_dict(CrawledData.subdomains, orient='index', columns=['count'])
-    subdomains_df.tao_csv(os.path.join(data_output_dir, 'subdomain_counts.csv'))
+    subdomains_df.to_csv(os.path.join(data_output_dir, 'subdomain_counts.csv'))
 
     
