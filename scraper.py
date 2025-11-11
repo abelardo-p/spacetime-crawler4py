@@ -15,9 +15,8 @@ def scraper(url: str, resp, stopWords: Set[str]) -> Tuple[List[str], Dict[str, i
     next_links, cur_page_words, total_word_count = [], {}, 0
     if resp.status > 199 and resp.status < 300 and len(resp.raw_response.content) < RAW_RESPONSE_TEXT_LIMIT:
         next_links, tokens, cur_page_words, total_word_count = extract_link_information(resp, stopWords)
-        invalid_page = (exact_match(tokens) or 
-                        near_match(tokens) or 
-                        check_page_low_data(cur_page_words, total_word_count) )
+        invalid_page = (check_page_low_data(cur_page_words, total_word_count) or
+                        exact_match(tokens))
         if invalid_page:
             next_links = []
         else:
@@ -66,7 +65,7 @@ def is_valid(url):
         if parsed.scheme not in set(["http", "https"]):
             return False
         if re.match(
-            r".*\.(java|py|cpp|c|php|css|js|bmp|gif|jpe?g|ico"
+            r".*\.(apk|war|ppsx|bib|ff|nb|z|java|py|cpp|c|php|css|js|bmp|gif|jpe?g|ico"
             + r"|png|tiff?|mid|mp2|mp3|mp4"
             + r"|wav|avi|mov|mpeg|ram|m4v|mkv|ogg|ogv|pdf"
             + r"|ps|eps|tex|ppt|pptx|doc|docx|xls|xlsx|names"

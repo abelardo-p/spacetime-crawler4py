@@ -27,9 +27,11 @@ def near_match(tokens: list[str]):
     """ Returns true if the page's contents have a Jaccard Similarity score of at least 
     NEAR_SIMILARITY_THRESHOLD with any visited page's """
     grams = make_n_grams(tokens, N_GRAMS)
+
     for visited_page_grams in CrawledData.page_n_grams:
-        sim_score = get_jaccard_similarity(grams, {word for word in visited_page_grams})
+        sim_score = get_jaccard_similarity(grams, visited_page_grams)
         if sim_score >= NEAR_SIMILARITY_THRESHOLD:
             return True
-    CrawledData.page_n_grams.update(grams)
+        
+    CrawledData.page_n_grams.append(grams)
     return False
